@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Birthday Surprise</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <section class="card welcome-card" id="welcome">
+      <p class="eyebrow">Birthday Challenge</p>
+      <h1>Ready for the fun?</h1>
+      <p class="intro-text">
+        <span class="danger">WARNING!!</span><br /><br />
+        Highly Dangerous Human Detected.<br /><br />
+        Proceed at your own risk.
+      </p>
+      <div class="actions">
+        <button type="button" onclick="startQuiz()">Enter</button>
+      </div>
+    </section>
+
+    <section class="card quiz-card hide" id="quiz">
+      <div class="progress" aria-label="Quiz progress">
+        <span id="bar"></span>
+      </div>
+      <h2 id="qTitle"></h2>
+      <div id="options" class="options-list" role="list"></div>
+      <div class="actions">
+        <button type="button" onclick="nextQuestion()">Next</button>
+      </div>
+    </section>
+
+    <section class="card loading-card hide" id="loading">
+      <div class="loading" aria-live="polite">
+        <p id="loadingText">Calculating...</p>
+      </div>
+    </section>
+
+    <section class="card result-card hide" id="result">
+      <p class="eyebrow">Birthday Score</p>
+      <h1>Your Score</h1>
+      <div class="score" id="scoreText">0%</div>
+      <h2 id="message"></h2>
+      <div class="actions">
+        <button type="button" onclick="showInvitation()">
+          Click here to view my birthday invitation
+        </button>
+      </div>
+    </section>
+
+    <section class="card invite-card hide" id="invite">
+      <h1>21<sup>st</sup> BD</h1>
+      <h2 class="invite-name">#Abhi</h2>
+      <img src="bd2.jpg" alt="Birthday invitation illustration" />
+      <div class="unlock">You're invited ❤</div>
+      <p class="invite-text">
+        Thank you for being part of my journey.<br /><br />
+        I can't wait to celebrate this special day with you.
+      </p>
+      <div class="invite-details">
+        <h2>06 September 2026</h2>
+        <h3>6.00 PM</h3>
+        <button type="button" onclick="window.open('https://goo.gl/maps/1SaZueicaaBV15rq5', '_blank')">
+          Location
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const questions = [
+      {
+        q: "What is my dog's name?",
+        options: ["zara", "brownie", "zaira", "doggy"],
+        correct: ["zaira"],
+      },
+      {
+        q: "How old am I turning this year?",
+        options: ["18", "20", "21", "I forgot"],
+        correct: ["21"],
+      },
+      {
+        q: "What do I love the most?",
+        options: ["Designing", "Sleeping", "Food", "Chat with girls"],
+        correct: ["Chat with girls"],
+      },
+      {
+        q: "When is my birthday date?",
+        options: ["12", "10", "6", "8"],
+        correct: ["6"],
+      },
+      {
+        q: "What should you bring to my birthday?",
+        options: ["Lamborghini", "A girl", "DJI Drone", "Voucher"],
+        correct: ["Lamborghini", "A girl", "DJI Drone", "Voucher"],
+      },
+      {
+        q: "What do I do in my free time?",
+        options: ["Scrolling", "Gaming", "Reading", "Dancing"],
+        correct: ["Scrolling"],
+      },
+      {
+        q: "What do I like the most?",
+        options: ["Watching movies", "Reading books", "Scrolling", "Hiking"],
+        correct: ["Hiking"],
+      },
+      {
+        q: "Have we taken a photo together?",
+        options: ["Yes", "No", "Not yet"],
+        correct: ["Yes"],
+      },
+      {
+        q: "Will I be happy if you come?",
+        options: ["YES!", "Of course!", "100% YES!", "NO"],
+        correct: ["YES!", "Of course!", "100% YES!"],
+      },
+      {
+        q: "Do I have a girlfriend?",
+        options: ["YES", "NO"],
+        correct: ["NO"],
+      },
+    ];
+
+    let current = 0;
+    let score = 0;
+    let answer = "";
+
+    function startQuiz() {
+      document.getElementById("welcome").classList.add("hide");
+      document.getElementById("quiz").classList.remove("hide");
+      showQuestion();
+    }
+
+    function showQuestion() {
+      const q = questions[current];
+      document.getElementById("qTitle").innerHTML = `Question ${current + 1}/10 <br /><br /> ${q.q}`;
+
+      let html = "";
+      q.options.forEach((option) => {
+        html += `<div class="option" role="button" tabindex="0" onclick="selectAnswer(this,'${option}')">${option}</div>`;
+      });
+
+      document.getElementById("options").innerHTML = html;
+      document.getElementById("bar").style.width = `${(current / 10) * 100}%`;
+      answer = "";
+    }
+
+    function selectAnswer(element, option) {
+      document.querySelectorAll(".option").forEach((x) => x.classList.remove("selected"));
+      element.classList.add("selected");
+      answer = option;
+    }
+
+    function nextQuestion() {
+      if (answer === "") {
+        alert("Select an answer.");
+        return;
+      }
+
+      if (questions[current].correct.includes(answer)) {
+        score += 10;
+      }
+
+      current += 1;
+
+      if (current < questions.length) {
+        showQuestion();
+      } else {
+        document.getElementById("quiz").classList.add("hide");
+        showLoading();
+      }
+    }
+
+    function showLoading() {
+      document.getElementById("loading").classList.remove("hide");
+
+      const text = [
+        "Finding our memories...",
+        "Checking friendship level...",
+        "Making sure you aren't coming only for the cake...",
+        "Sending data to FBI...",
+        "Just kidding...",
+        "Done!",
+      ];
+
+      let i = 0;
+      const interval = setInterval(() => {
+        document.getElementById("loadingText").innerHTML = text[i];
+        i += 1;
+
+        if (i === text.length) {
+          clearInterval(interval);
+          setTimeout(showResult, 1750);
+        }
+      }, 2500);
+    }
+
+    function showResult() {
+      document.getElementById("loading").classList.add("hide");
+      document.getElementById("result").classList.remove("hide");
+      document.getElementById("scoreText").innerHTML = `${score}%`;
+
+      let msg = "";
+      if (score <= 45) {
+        msg = "Hmm... okay okay.<br />You still got a reservation for my birthday. 😂";
+      } else if (score <= 60) {
+        msg = "WOW!<br />Warmly welcome to my birthday.";
+      } else if (score <= 65) {
+        msg = "You're a really good friend!<br />Let's make great memories together.";
+      } else {
+        msg = "LEGENDARY FRIEND DETECTED!<br />My birthday wouldn't be the same without you!";
+      }
+
+      document.getElementById("message").innerHTML = msg;
+    }
+
+    function showInvitation() {
+      document.getElementById("result").classList.add("hide");
+      document.getElementById("invite").classList.remove("hide");
+      window.scrollTo(0, 0);
+    }
+  </script>
+</body>
+</html>
